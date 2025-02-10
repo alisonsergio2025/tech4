@@ -944,7 +944,14 @@ X = df_xgb[['ano', 'mes', 'dia']]  # Features baseadas em 'ds'
 y = df_xgb['y']  # Target, a coluna de valores que queremos prever
 
 # Dividindo os dados entre treino e validação (80% treino, 20% validação)
-X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.2, shuffle=False)
+#X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.2, shuffle=False)
+
+# Proporção de treino (80%)
+split_index = int(len(X) * 0.8)
+
+# Dividindo os dados manualmente
+X_train, X_valid = X.iloc[:split_index], X.iloc[split_index:]
+y_train, y_valid = y.iloc[:split_index], y.iloc[split_index:]
 
 # Inicializando o modelo XGBoost Regressor
 xgb_model = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=1000)
