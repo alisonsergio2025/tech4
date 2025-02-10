@@ -7,3 +7,5 @@ pandas-datareader
 prophet
 xgboost
 prophet
+statsforecast==2.0.0
+statsmodels==0.14.2
