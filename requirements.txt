@@ -13,4 +13,3 @@ seaborn
 warnings
 IPython
 altair
-sklearn
