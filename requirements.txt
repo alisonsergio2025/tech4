@@ -9,7 +9,6 @@ xgboost
 pmdarima
 prophet
 scipy
-seaborn
 warnings
 IPython
 altair
