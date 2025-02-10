@@ -5,7 +5,6 @@ streamlit
 yfinance
 pandas-datareader
 prophet
-statsmodels
 xgboost
 pmdarima
 prophet
