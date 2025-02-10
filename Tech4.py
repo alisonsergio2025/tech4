@@ -16,30 +16,6 @@ Original file is located at
 
 **1. Instalando Bibliotecas**
 """
-
-#! pip install matplotlib
-#! pip install numpy
-#! pip install pandas
-#! pip install statsmodels
-#! pip install xgboost
-#! pip install yfinance
-#! pip install pmdarima
-#! pip install prophet
-#! pip install sklearn
-#!pip install statsforecast
-
-# Bibliotecas utilizadas
-#import matplotlib
-#import numpy
-#import pandas
-#import statsmodels
-#import xgboost
-#import yfinance
-#import pmdarima
-#import prophet
-#import sklearn
-#import StatsForecast
-
 # Importando e Aplicando o álias a cada biblioteca
 import streamlit as st
 import matplotlib.pyplot as plt
@@ -159,22 +135,10 @@ st.write(dados.head())  # Mostra as primeiras linhas do DataFrame
 print(dados.columns) # Mostra os nomes das colunas
 
 """**Analisando Outliers**"""
-
 dados2 = dados.copy()
 # Removendo o MultiIndex das colunas
 dados2.columns = ['Date', 'Open', 'Close']
-
-# Conferindo a estrutura do DataFrame após o ajuste
-#print(dados2.head())
-
-
 # Criando o boxplot
-#sns.set(style="whitegrid")
-#fig, axes = plt.subplots(figsize=(12, 8))
-#sns.boxplot(x="Close", data=dados2)
-#axes.set_title("Boxplot")
-#plt.show()
-# Título do aplicativo no navegador
 st.title("Visualização de Boxplot")
 # Adicionando uma descrição
 st.write("Este gráfico mostra a distribuição dos valores de fechamento (Close).")
