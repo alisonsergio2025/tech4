@@ -6,3 +6,4 @@ yfinance
 pandas-datareader
 prophet
 statsmodels
+xgboost
