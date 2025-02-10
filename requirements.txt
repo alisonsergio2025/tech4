@@ -6,5 +6,4 @@ yfinance
 pandas-datareader
 prophet
 xgboost
-pmdarima==2.0.4
 prophet
