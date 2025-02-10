@@ -36,7 +36,11 @@ from statsmodels.graphics.gofplots import qqplot
 from scipy.stats import shapiro
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 import seaborn as sns
-
+from sklearn.metrics import (
+    mean_absolute_error,
+    mean_squared_error,
+    mean_absolute_percentage_error,
+)
 # Ignorar avisos específicos emitidos pelo Pandas tipo SettingWithCopyWarning
 import warnings
 from pandas.errors import SettingWithCopyWarning
@@ -667,8 +671,8 @@ chart = alt.Chart(df_total).mark_line().encode(
 st.altair_chart(chart, use_container_width=True)
 #-----------------------------------------------------------------------------------
 def metricas(y_true, y_pred):
-    from sklearn.metrics import mean_absolute_error, mean_squared_error
-    import numpy as np
+    #from sklearn.metrics import mean_absolute_error, mean_squared_error
+    #import numpy as np
     return {
         'MAE': mean_absolute_error(y_true, y_pred),
         'MSE': mean_squared_error(y_true, y_pred),
