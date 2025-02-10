@@ -24,11 +24,6 @@ import pandas as pd
 import xgboost as xgb
 import yfinance as yf
 from prophet import Prophet
-from sklearn.metrics import (
-    mean_absolute_error,
-    mean_squared_error,
-    mean_absolute_percentage_error,
-)
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.stattools import adfuller
 from statsmodels.tsa.stattools import acf, pacf
