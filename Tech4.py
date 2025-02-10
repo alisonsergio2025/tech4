@@ -992,7 +992,10 @@ st.write(f"RMSE: {rmse:.4f}")
 
 # Atualizando tabela de modelos
 modelo = 'XGBoost'
-novo_resultado = pd.DataFrame([{'Modelo': modelo, 'MAE': mae, 'RMSE': rmse}])
+#novo_resultado = pd.DataFrame([{'Modelo': modelo, 'MAE': mae, 'RMSE': rmse}])
+#resultados_modelos = pd.concat([resultados_modelos, novo_resultado], ignore_index=True)
+
+novo_resultado = pd.DataFrame([{'Modelo': modelo, **resultado_metricas}])
 resultados_modelos = pd.concat([resultados_modelos, novo_resultado], ignore_index=True)
 
 
