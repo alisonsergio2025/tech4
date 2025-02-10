@@ -9,3 +9,10 @@ statsmodels
 xgboost
 pmdarima
 prophet
+scipy
+seaborn
+statsforecast
+warnings
+IPython
+altair
+sklearn
