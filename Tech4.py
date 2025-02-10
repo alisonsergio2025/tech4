@@ -920,24 +920,20 @@ novo_resultado = pd.DataFrame([{'Modelo': modelo, **resultado_metricas}])
 resultados_modelos = pd.concat([resultados_modelos, novo_resultado], ignore_index=True)
 #--------------------------------------------------------------------------------------------
 # Criando o app no Streamlit
-st.title("Previsões do XGBoost vs. Valores Reais")
-
 """**Utilizando o Modelo XGBOOST**"""
-df_xgb = df_filtrado
+st.title("Previsões do XGBoost vs. Valores Reais")
+df_xgb = df_filtrado.copy()
 df_xgb['ds'] = pd.to_datetime(df_xgb['ds'])
 
-# Extraindo características temporais, como ano, mês e dia para o modelo XGBoost
+# Extraindo características temporais
 df_xgb['ano'] = df_xgb['ds'].dt.year
 df_xgb['mes'] = df_xgb['ds'].dt.month
 df_xgb['dia'] = df_xgb['ds'].dt.day
 df_xgb['diadasemana'] = df_xgb['ds'].dt.dayofweek
 
 # Definindo as features X e o alvo y
-X = df_xgb[['ano', 'mes', 'dia']]  # Features baseadas em 'ds'
-y = df_xgb['y']  # Target, a coluna de valores que queremos prever
-
-# Dividindo os dados entre treino e validação (80% treino, 20% validação)
-#X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.2, shuffle=False)
+X = df_xgb[['ano', 'mes', 'dia']]
+y = df_xgb['y']
 
 # Proporção de treino (80%)
 split_index = int(len(X) * 0.8)
@@ -954,18 +950,11 @@ xgb_model.fit(X_train, y_train)
 
 # Fazendo previsões para os dados de validação
 y_pred = xgb_model.predict(X_valid)
-# Criar DataFrame consolidado para Altair
-df_real = pd.DataFrame({
-    'ds': df_xgb['ds'].iloc[len(X_train):],
-    'y': y_valid,
-    'tipo': 'Valores Reais'
-})
 
-df_previsao = pd.DataFrame({
-    'ds': df_xgb['ds'].iloc[len(X_train):],
-    'y': y_pred,
-    'tipo': 'Previsões XGBoost'
-})
+# Criar DataFrame consolidado para Altair
+df_real = pd.DataFrame({'ds': df_xgb['ds'].iloc[split_index:], 'y': y_valid, 'tipo': 'Valores Reais'})
+df_previsao = pd.DataFrame({'ds': df_xgb['ds'].iloc[split_index:], 'y': y_pred, 'tipo': 'Previsões XGBoost'})
+
 
 # Concatenar os DataFrames
 df_total = pd.concat([df_real, df_previsao])
@@ -980,7 +969,6 @@ chart = alt.Chart(df_total).mark_line().encode(
     height=400,
     title="Previsões do XGBoost vs. Valores Reais"
 )
-
 # Exibir no Streamlit
 st.altair_chart(chart, use_container_width=True)
 
@@ -991,23 +979,6 @@ for metric, value in resultado_metricas.items():
 modelo = 'XGBoost'
 novo_resultado = pd.DataFrame([{'Modelo': modelo, **resultado_metricas}])
 resultados_modelos = pd.concat([resultados_modelos, novo_resultado], ignore_index=True)
-# Plotando os resultados
-plt.figure(figsize=(12,8))
-plt.plot(df_xgb['ds'].iloc[len(X_train):], y_valid, label='Valores Reais', color='blue')
-plt.plot(df_xgb['ds'].iloc[len(X_train):], y_pred, label='Previsões XGBoost', color='red', linestyle='--')
-plt.xlabel('Data')
-plt.ylabel('Valores')
-plt.title('Previsões do XGBoost vs. Valores Reais')
-plt.legend()
-# Ajustando a rotação dos rótulos de data no eixo x
-plt.xticks(rotation=45)
-# Opcional: formatando as datas
-ax = plt.gca()
-ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-# Ajuste de layout para evitar corte de rótulos
-plt.tight_layout()
-plt.show()
-
 
 st.title("Resultado dos Modelos")
 st.write(resultados_modelos)
