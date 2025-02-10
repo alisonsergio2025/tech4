@@ -930,12 +930,6 @@ resultados_modelos = pd.concat([resultados_modelos, novo_resultado], ignore_inde
 st.title("Previsões do XGBoost vs. Valores Reais")
 
 """**Utilizando o Modelo XGBOOST**"""
-import xgboost as xgb
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_absolute_error
-import matplotlib.dates as mdates
-import altair as alt
-
 df_xgb = df_filtrado
 df_xgb['ds'] = pd.to_datetime(df_xgb['ds'])
 
