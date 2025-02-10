@@ -922,6 +922,7 @@ resultados_modelos = pd.concat([resultados_modelos, novo_resultado], ignore_inde
 # Criando o app no Streamlit
 """**Utilizando o Modelo XGBOOST**"""
 st.title("Previsões do XGBoost vs. Valores Reais")
+# Criando cópia do DataFrame
 df_xgb = df_filtrado.copy()
 df_xgb['ds'] = pd.to_datetime(df_xgb['ds'])
 
@@ -942,19 +943,28 @@ split_index = int(len(X) * 0.8)
 X_train, X_valid = X.iloc[:split_index], X.iloc[split_index:]
 y_train, y_valid = y.iloc[:split_index], y.iloc[split_index:]
 
-# Inicializando o modelo XGBoost Regressor
-xgb_model = xgb.XGBRegressor(objective='reg:squarederror', n_estimators=1000)
+# Convertendo para o formato DMatrix do XGBoost
+dtrain = xgb.DMatrix(X_train, label=y_train)
+dvalid = xgb.DMatrix(X_valid)
 
-# Treinando o modelo
-xgb_model.fit(X_train, y_train)
+# Definição dos hiperparâmetros
+params = {
+    "objective": "reg:squarederror",
+    "eval_metric": "rmse",
+    "max_depth": 6,
+    "learning_rate": 0.1,
+    "n_estimators": 1000
+}
 
-# Fazendo previsões para os dados de validação
-y_pred = xgb_model.predict(X_valid)
+# Treinando o modelo diretamente sem usar sklearn
+xgb_model = xgb.train(params, dtrain, num_boost_round=100)
+
+# Fazendo previsões
+y_pred = xgb_model.predict(dvalid)
 
 # Criar DataFrame consolidado para Altair
 df_real = pd.DataFrame({'ds': df_xgb['ds'].iloc[split_index:], 'y': y_valid, 'tipo': 'Valores Reais'})
 df_previsao = pd.DataFrame({'ds': df_xgb['ds'].iloc[split_index:], 'y': y_pred, 'tipo': 'Previsões XGBoost'})
-
 
 # Concatenar os DataFrames
 df_total = pd.concat([df_real, df_previsao])
@@ -969,16 +979,22 @@ chart = alt.Chart(df_total).mark_line().encode(
     height=400,
     title="Previsões do XGBoost vs. Valores Reais"
 )
+
 # Exibir no Streamlit
 st.altair_chart(chart, use_container_width=True)
 
-resultado_metricas = metricas(y_valid.values,  y_pred )
-for metric, value in resultado_metricas.items():
-    st.write(f"{metric}: {value:.4f}")
+# Calculando métricas manualmente
+mae = (y_valid.values - y_pred).mean()
+rmse = ((y_valid.values - y_pred) ** 2).mean() ** 0.5
 
+st.write(f"MAE: {mae:.4f}")
+st.write(f"RMSE: {rmse:.4f}")
+
+# Atualizando tabela de modelos
 modelo = 'XGBoost'
-novo_resultado = pd.DataFrame([{'Modelo': modelo, **resultado_metricas}])
+novo_resultado = pd.DataFrame([{'Modelo': modelo, 'MAE': mae, 'RMSE': rmse}])
 resultados_modelos = pd.concat([resultados_modelos, novo_resultado], ignore_index=True)
+
 
 st.title("Resultado dos Modelos")
 st.write(resultados_modelos)
