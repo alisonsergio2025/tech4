@@ -170,9 +170,6 @@ st.pyplot(fig)
 
 **Histograma dos Pontos de Fechamento**
 """
-
-import matplotlib.pyplot as plt
-
 # Plotar o histograma da variável 'Close'
 #plt.hist(dados["Close"], bins=20, edgecolor="black")
 #plt.title("Histograma dos Pontos de Fechamento")
@@ -182,7 +179,6 @@ import matplotlib.pyplot as plt
 #plt.show()
 # Título da aplicação no navegador
 st.title("Histograma dos Pontos de Fechamento")
-
 # Descrição
 st.write("Este gráfico mostra o histograma dos pontos de fechamento ('Close').")
 # Criando o histograma
@@ -255,12 +251,9 @@ st.pyplot(fig)
 
 
 """**Identificando o Padrão da Série Temporal**"""
-
 result = seasonal_decompose(dados["Close"], model="multiplicative", period=252)
 result.seasonal.iloc[:252].plot(figsize=(12, 8))
-
 """**Realizando a decomposição de série temporal para separar os componentes mais simples e interpretáveis, com o objetivo de analisar o comportamento e melhorar a qualidade dos modelo preditivo.**"""
-
 # Decomposição da série temporal
 #dados.info()
 # Tendência - Direção
