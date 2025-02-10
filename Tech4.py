@@ -36,11 +36,6 @@ from statsmodels.graphics.gofplots import qqplot
 from scipy.stats import shapiro
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 import seaborn as sns
-from sklearn.metrics import (
-    mean_absolute_error,
-    mean_squared_error,
-    mean_absolute_percentage_error,
-)
 # Ignorar avisos específicos emitidos pelo Pandas tipo SettingWithCopyWarning
 import warnings
 from pandas.errors import SettingWithCopyWarning
@@ -226,13 +221,8 @@ ax.set_xlabel("Pontos de Fechamento Ampliado")
 ax.set_ylabel("Frequência")
 # Exibindo o gráfico no Streamlit
 st.pyplot(fig)
-
-
-
 """**Gráfico de Pontos de Abertura e Fechamento**"""
-
 import matplotlib.pyplot as plt
-
 # Plotar a variação de Open e Close ao longo do tempo
 data_principal.reset_index(inplace=True)
 #plt.figure(figsize=(12,8))
@@ -500,9 +490,6 @@ plt.tight_layout()
 # Exibindo o gráfico no Streamlit
 st.pyplot(fig)
 
-
-
-
 x_diff = df_diff.Close.dropna().values
 result_diff = adfuller(x_diff)
 print("Teste ADF")
@@ -671,52 +658,40 @@ chart = alt.Chart(df_total).mark_line().encode(
 st.altair_chart(chart, use_container_width=True)
 #-----------------------------------------------------------------------------------
 def metricas(y_true, y_pred):
-    #from sklearn.metrics import mean_absolute_error, mean_squared_error
-    #import numpy as np
-    return {
-        'MAE': mean_absolute_error(y_true, y_pred),
-        'MSE': mean_squared_error(y_true, y_pred),
-        'RMSE': np.sqrt(mean_squared_error(y_true, y_pred))
-    }
-resultado_metricas = metricas(y_true, y_pred)
-for metric, value in resultado_metricas.items():
-    st.write(f"{metric}: {value:.4f}")
-# DataFrame para armazenar os resultados
-resultados_modelos = pd.DataFrame(columns=['Modelo', 'WMAPE', 'MAE', 'MSE', 'RMSE', 'MAPE', 'SMAPE', 'MASE'])
-def metricas(y_true, y_pred):
     """
     Calcula várias métricas de avaliação de séries temporais:
     WMAPE, MAE, MSE, RMSE, MAPE, SMAPE, MASE.
 
     Parâmetros:
-    y_true: Valores reais.
-    y_pred: Valores previstos.
+    y_true: Valores reais (array ou lista).
+    y_pred: Valores previstos (array ou lista).
 
     Retorno: Dicionário contendo as métricas calculadas.
     """
-    # WMAPE  Erro Percentual Absoluto que avalia através de pesos
-    wmape_value = np.abs(y_true - y_pred).sum() / np.abs(y_true).sum()
+    y_true, y_pred = np.array(y_true), np.array(y_pred)
 
-    # MAE - Média de Erro Absoluto
+    # WMAPE - Erro Percentual Absoluto Ponderado
+    wmape_value = np.sum(np.abs(y_true - y_pred)) / np.sum(np.abs(y_true))
+
+    # MAE - Erro Absoluto Médio
     mae = np.mean(np.abs(y_true - y_pred))
 
-    # MSE - Erro quadrático médio
-    mse = np.mean((y_true - y_pred)**2)
+    # MSE - Erro Quadrático Médio
+    mse = np.mean((y_true - y_pred) ** 2)
 
-    # RMSE - Raiz quadrada do erro médio
+    # RMSE - Raiz do Erro Quadrático Médio
     rmse = np.sqrt(mse)
 
-    # MAPE - Erro absoluto percentual médio
+    # MAPE - Erro Percentual Absoluto Médio
     mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 
-    # SMAPE - Erro absoluto médio em percentual simétrico
+    # SMAPE - Erro Percentual Absoluto Médio Simétrico
     smape = 100 * np.mean(2 * np.abs(y_true - y_pred) / (np.abs(y_true) + np.abs(y_pred)))
 
-    # MASE - Erro médio de escala absoluto
-    naive_forecast = np.roll(y_true, shift=1)  # Naive forecast (y_t-1)
-    naive_forecast[0] = np.nan
-    mase = np.mean(np.abs(y_true[1:] - y_pred[1:])) / np.mean(np.abs(y_true[1:] - naive_forecast[1:]))
-
+    # MASE - Erro Médio Absoluto Escalado
+    naive_forecast = np.roll(y_true, shift=1)  # Previsão naive (y_t-1)
+    naive_forecast[0] = np.nan  # O primeiro valor fica inválido
+    mase = np.nanmean(np.abs(y_true[1:] - y_pred[1:]) / np.abs(y_true[1:] - naive_forecast[1:]))
 
     return {
         'WMAPE': wmape_value,
@@ -727,6 +702,20 @@ def metricas(y_true, y_pred):
         'SMAPE': smape,
         'MASE': mase
     }
+
+# Exemplo de uso
+#y_true = np.array([100, 200, 300, 400, 500])
+#y_pred = np.array([110, 190, 290, 410, 490])
+
+resultado_metricas = metricas(y_true, y_pred)
+
+# Exibindo os resultados no Streamlit
+st.write("### Métricas de Avaliação")
+for metric, value in resultado_metricas.items():
+    st.write(f"{metric}: {value:.4f}")
+
+# Criando DataFrame para armazenar os resultados
+resultados_modelos = pd.DataFrame(columns=['Modelo', 'WMAPE', 'MAE', 'MSE', 'RMSE', 'MAPE', 'SMAPE', 'MASE'])
 #-----------------------------------------------------------------------------------
 st.title("Previsão com Modelo SeasonalNaive")
 # n_jobs -1 parâmetro padrão, para utilizar as CPUS
