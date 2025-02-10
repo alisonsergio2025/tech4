@@ -36,6 +36,11 @@ from statsmodels.graphics.gofplots import qqplot
 from scipy.stats import shapiro
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 import seaborn as sns
+from sklearn.metrics import (
+    mean_absolute_error,
+    mean_squared_error,
+    mean_absolute_percentage_error,
+)
 # Ignorar avisos específicos emitidos pelo Pandas tipo SettingWithCopyWarning
 import warnings
 from pandas.errors import SettingWithCopyWarning
